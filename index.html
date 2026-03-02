@@ -4,158 +4,334 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dicko Dev Tools - Network Suite</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+        }
+
+        * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
+
+        /* Navbar */
+        .navbar {
+            height: 70px; background: var(--bg-card); display: flex;
+            align-items: center; padding: 0 1.5rem; position: fixed;
+            top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border);
+        }
+
+        .menu-btn {
+            background: none; border: none; font-size: 1.25rem;
+            cursor: pointer; color: var(--text-main); padding: 8px;
+            border-radius: 8px; margin-right: 1rem;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .logo-icon {
+            background: var(--primary); color: white; width: 32px;
+            height: 32px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: -280px;
+            width: var(--sidebar-w); height: 100%;
+            background: var(--bg-card); border-right: 1px solid var(--border);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000;
+            padding: 1.5rem;
+        }
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; text-decoration: none; color: var(--text-muted);
+            border-radius: 10px; margin-bottom: 5px; transition: 0.2s; cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active { background: #eef2ff; color: var(--primary); font-weight: 600; }
+
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; z-index: 1500;
+        }
+        .overlay.active { display: block; }
+
+        /* Content */
+        main { margin-top: 90px; padding: 1rem; max-width: 900px; margin-inline: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--bg-card); padding: 1.5rem; border-radius: 16px;
+            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        input, select {
+            width: 100%; padding: 12px; border: 1.5px solid var(--border);
+            border-radius: 10px; font-size: 1rem; outline: none; background: #fff;
+        }
+        .btn-primary {
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 14px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; font-size: 1rem;
+        }
+
+        /* Tool Specifics */
+        .port-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .port-item { background: #f1f5f9; padding: 10px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+        .port-item b { color: var(--primary); }
+
+        .cable-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
+        .cable-list { font-size: 0.8rem; line-height: 1.8; }
+        .cable-list b { width: 20px; display: inline-block; }
+
+        /* Result Grid */
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 20px; }
+        .res-item { background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+        .res-item small { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .res-item p { color: var(--primary); font-weight: 700; font-family: monospace; font-size: 0.95rem; margin-top: 4px; }
+
+        @media (max-width: 600px) { .cable-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
 
-    <!-- Header Navbar -->
     <header class="navbar">
-        <div class="nav-left">
-            <button class="menu-btn" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="logo">
-                <div class="logo-icon"><i class="fas fa-terminal"></i></div>
-                <span>Dicko Dev Tools</span>
-            </div>
-        </div>
-        <div class="nav-right">
-            <span class="version-tag">v1.2 Beta</span>
+        <button class="menu-btn" onclick="toggleMenu(true)"><i class="fas fa-bars"></i></button>
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-network-wired"></i></div>
+            <span>Dicko Dev Tools</span>
         </div>
     </header>
 
-    <!-- Overlay Sidebar -->
-    <div class="sidebar-overlay" id="overlay"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
 
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-content">
-            <p class="sidebar-label">MAIN TOOLS</p>
-            <nav>
-                <a href="#" class="nav-link active" data-target="calc">
-                    <i class="fas fa-calculator"></i> Subnet Calculator
-                </a>
-                <a href="#" class="nav-link" data-target="iplist">
-                    <i class="fas fa-list-ol"></i> IP List & Cheat Sheet
-                </a>
-                <a href="#" class="nav-link" data-target="tjkt">
-                    <i class="fas fa-user-graduate"></i> Materi TJKT
-                </a>
-            </nav>
-            
-            <p class="sidebar-label" style="margin-top: 2rem;">RESOURCES</p>
-            <nav>
-                <a href="#" class="nav-link" data-target="about">
-                    <i class="fas fa-info-circle"></i> About Dev
-                </a>
-            </nav>
+        <div class="sidebar-header">
+            <h3 style="color: var(--primary)">Dashboard</h3>
+            <button class="menu-btn" onclick="toggleMenu(false)"><i class="fas fa-times"></i></button>
         </div>
+        <nav id="menuNav">
+            <div class="nav-link active" onclick="showTab('calc', this)"><i class="fas fa-calculator"></i> Subnet Calculator</div>
+            <div class="nav-link" onclick="showTab('checkip', this)"><i class="fas fa-search-location"></i> Check IP Public</div>
+            <div class="nav-link" onclick="showTab('tjkt-tools', this)"><i class="fas fa-toolbox"></i> Utility Tools TJKT</div>
+            <div class="nav-link" onclick="showTab('iplist', this)"><i class="fas fa-list"></i> IP Class Reference</div>
+            <div class="nav-link" onclick="showTab('tjkt', this)"><i class="fas fa-graduation-cap"></i> Materi Dasar</div>
+        </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="content">
-        <!-- Section: Calculator -->
+    <main>
+        <!-- Calculator Section -->
         <section id="calc" class="tab-content active">
-            <div class="section-header">
-                <h2>Subnet Calculator</h2>
-                <p>Hitung pembagian jaringan IP Class A, B, dan C dengan mudah.</p>
-            </div>
-
             <div class="card">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>IP Address</label>
-                        <input type="text" id="ipAddress" placeholder="192.168.1.1" value="192.168.1.1">
-                    </div>
-                    <div class="form-group">
-                        <label>Prefix / CIDR</label>
-                        <select id="cidrSelect"></select>
-                    </div>
+                <h2><i class="fas fa-calculator" style="margin-right:10px; color:var(--primary)"></i>Subnet Calculator</h2>
+                <div class="form-group">
+                    <label>IP Address</label>
+                    <input type="text" id="ipInput" value="192.168.1.1">
                 </div>
-                <button class="btn-primary" id="btnCalculate">
-                    <i class="fas fa-bolt"></i> Kalkulasi Sekarang
-                </button>
-            </div>
+                <div class="form-group">
+                    <label>Prefix / CIDR</label>
+                    <select id="cidrInput"></select>
+                </div>
+                <button class="btn-primary" onclick="hitungSubnet()">Hitung Analisis</button>
 
-            <div id="resultCard" class="card result-card" style="display: none;">
-                <h3>Hasil Analisis</h3>
-                <div class="result-grid" id="resultDetails">
-                    <!-- JS will inject results here -->
+                <div id="hasilCalc" style="display:none;" class="result-grid">
+                    <div class="res-item"><small>Network ID</small><p id="outNet"></p></div>
+                    <div class="res-item"><small>Broadcast ID</small><p id="outBroad"></p></div>
+                    <div class="res-item"><small>Subnet Mask</small><p id="outMask"></p></div>
+                    <div class="res-item"><small>IP Class</small><p id="outClass"></p></div>
+                    <div class="res-item"><small>Total Host</small><p id="outHost"></p></div>
                 </div>
             </div>
         </section>
 
-        <!-- Section: IP List -->
+        <!-- NEW: TJKT Utility Tools -->
+        <section id="tjkt-tools" class="tab-content">
+            <!-- Bandwidth Converter -->
+            <div class="card">
+                <h3><i class="fas fa-exchange-alt" style="margin-right:10px; color:var(--primary)"></i>Bandwidth Converter</h3>
+                <div class="form-group" style="margin-top:15px">
+                    <label>Input Nilai</label>
+                    <input type="number" id="bwInput" placeholder="Masukkan angka..." oninput="convertBw()">
+                </div>
+                <div class="result-grid">
+                    <div class="res-item"><small>Kbps</small><p id="outKbps">0</p></div>
+                    <div class="res-item"><small>Mbps</small><p id="outMbps">0</p></div>
+                    <div class="res-item"><small>Gbps</small><p id="outGbps">0</p></div>
+                </div>
+            </div>
+
+            <!-- Cabling Guide -->
+            <div class="card">
+                <h3><i class="fas fa-ethernet" style="margin-right:10px; color:var(--primary)"></i>Cabling Guide (RJ45)</h3>
+                <div class="cable-grid">
+                    <div class="res-item">
+                        <small>T568B (Straight Standard)</small>
+                        <div class="cable-list">
+                            1. Putih Oranye | 2. Oranye<br>
+                            3. Putih Hijau | 4. Biru<br>
+                            5. Putih Biru | 6. Hijau<br>
+                            7. Putih Cokelat | 8. Cokelat
+                        </div>
+                    </div>
+                    <div class="res-item">
+                        <small>T568A</small>
+                        <div class="cable-list">
+                            1. Putih Hijau | 2. Hijau<br>
+                            3. Putih Oranye | 4. Biru<br>
+                            5. Putih Biru | 6. Oranye<br>
+                            7. Putih Cokelat | 8. Cokelat
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common Ports -->
+            <div class="card">
+                <h3><i class="fas fa-door-open" style="margin-right:10px; color:var(--primary)"></i>Common Network Ports</h3>
+                <div class="port-list" style="margin-top:15px">
+                    <div class="port-item">FTP: <b>21</b></div>
+                    <div class="port-item">SSH: <b>22</b></div>
+                    <div class="port-item">Telnet: <b>23</b></div>
+                    <div class="port-item">DNS: <b>53</b></div>
+                    <div class="port-item">HTTP: <b>80</b></div>
+                    <div class="port-item">HTTPS: <b>443</b></div>
+                    <div class="port-item">Winbox: <b>8291</b></div>
+                    <div class="port-item">MySQL: <b>3306</b></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Check IP -->
+        <section id="checkip" class="tab-content">
+            <div class="card" style="text-align: center;">
+                <h2>Informasi IP Publik</h2>
+                <h1 id="myIp" style="font-size: 2.5rem; color: var(--primary); margin: 20px 0;">...</h1>
+                <div class="result-grid" style="text-align: left;">
+                    <div class="res-item"><small>ISP / ASN</small><p id="myIsp">-</p></div>
+                    <div class="res-item"><small>Kota / Negara</small><p id="myCity">-</p></div>
+                </div>
+                <button class="btn-primary" style="margin-top:20px; max-width: 200px;" onclick="fetchIp()">Refresh Data</button>
+            </div>
+        </section>
+
+        <!-- Reference sections ... -->
         <section id="iplist" class="tab-content">
-            <div class="section-header">
-                <h2>IP Address Cheat Sheet</h2>
-                <p>Daftar range IP Public dan Private sesuai standar RFC.</p>
-            </div>
-            <div class="card overflow-x">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th>First Octet Range</th>
-                            <th>Default Mask</th>
-                            <th>Private Range</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="badge cls-a">Class A</span></td>
-                            <td>1 - 126</td>
-                            <td>255.0.0.0 (/8)</td>
-                            <td>10.0.0.0 - 10.255.255.255</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge cls-b">Class B</span></td>
-                            <td>128 - 191</td>
-                            <td>255.255.0.0 (/16)</td>
-                            <td>172.16.0.0 - 172.31.255.255</td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge cls-c">Class C</span></td>
-                            <td>192 - 223</td>
-                            <td>255.255.255.0 (/24)</td>
-                            <td>192.168.0.0 - 192.168.255.255</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card">
+                <h2>IP Class Reference</h2>
+                <div class="res-item" style="margin-bottom:10px"><b>Kelas A:</b> 1.0.0.0 - 126.255.255.255 (/8)</div>
+                <div class="res-item" style="margin-bottom:10px"><b>Kelas B:</b> 128.0.0.0 - 191.255.255.255 (/16)</div>
+                <div class="res-item"><b>Kelas C:</b> 192.0.0.0 - 223.255.255.255 (/24)</div>
             </div>
         </section>
 
-        <!-- Section: TJKT -->
         <section id="tjkt" class="tab-content">
-            <div class="section-header">
-                <h2>Materi Pembelajaran TJKT</h2>
-            </div>
-            <div class="kb-grid">
-                <div class="kb-item">
-                    <i class="fas fa-project-diagram"></i>
-                    <h4>Topologi Jaringan</h4>
-                    <p>Mempelajari susunan fisik dan logis antar komputer: Star, Mesh, Bus, dan Hybrid.</p>
-                </div>
-                <div class="kb-item">
-                    <i class="fas fa-route"></i>
-                    <h4>MikroTik Routing</h4>
-                    <p>Dasar-dasar konfigurasi RouterOS, NAT, Firewall, dan Bandwidth Management.</p>
-                </div>
-                <div class="kb-item">
-                    <i class="fas fa-shield-halved"></i>
-                    <h4>Cyber Security</h4>
-                    <p>Keamanan dasar jaringan dari serangan sniffing, spoofing, dan Brute Force.</p>
-                </div>
+            <div class="card">
+                <h2>Materi Dasar TJKT</h2>
+                <div class="res-item"><p><b>OSI Layer:</b> Physical, Data Link, Network, Transport, Session, Presentation, Application.</p></div>
+                <div class="res-item" style="margin-top:10px"><p><b>Perangkat:</b> Router, Switch, Hub, Access Point, Bridge, Firewall.</p></div>
             </div>
         </section>
     </main>
 
-    <script src="js/calculator.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        window.onload = function() {
+            initCidrOptions();
+        };
+
+        function initCidrOptions() {
+            const select = document.getElementById('cidrInput');
+            for (let i = 32; i >= 1; i--) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.text = `/${i} - (${cidrToMask(i)})`;
+                if (i === 24) opt.selected = true;
+                select.add(opt);
+            }
+        }
+
+        function cidrToMask(cidr) {
+            let mask = []; let temp = cidr;
+            for (let i = 0; i < 4; i++) {
+                let m = temp >= 8 ? 8 : (temp > 0 ? temp : 0);
+                mask.push(temp > 0 ? 256 - Math.pow(2, 8 - m) : 0);
+                temp -= m;
+            }
+            return mask.join('.');
+        }
+
+        function toggleMenu(show) {
+            document.getElementById('sidebar').classList.toggle('active', show);
+            document.getElementById('overlay').classList.toggle('active', show);
+        }
+
+        function showTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            if(tabId === 'checkip') fetchIp();
+            toggleMenu(false);
+        }
+
+        // Calculation Logic
+        function hitungSubnet() {
+            const ip = document.getElementById('ipInput').value;
+            const cidr = parseInt(document.getElementById('cidrInput').value);
+            if(!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip)) return alert("IP tidak valid");
+            
+            const ipParts = ip.split('.').map(Number);
+            const maskStr = cidrToMask(cidr);
+            const maskParts = maskStr.split('.').map(Number);
+            const net = ipParts.map((p, i) => p & maskParts[i]);
+            const broad = net.map((p, i) => p | (255 - maskParts[i]));
+
+            document.getElementById('outNet').innerText = net.join('.');
+            document.getElementById('outBroad').innerText = broad.join('.');
+            document.getElementById('outMask').innerText = maskStr;
+            document.getElementById('outHost').innerText = Math.pow(2, 32-cidr).toLocaleString();
+            document.getElementById('outClass').innerText = ipParts[0] < 128 ? "A" : (ipParts[0] < 192 ? "B" : "C");
+            document.getElementById('hasilCalc').style.display = 'grid';
+        }
+
+        // Bandwidth Converter
+        function convertBw() {
+            const val = parseFloat(document.getElementById('bwInput').value) || 0;
+            document.getElementById('outKbps').innerText = (val * 1000).toLocaleString();
+            document.getElementById('outMbps').innerText = (val).toLocaleString();
+            document.getElementById('outGbps').innerText = (val / 1000).toLocaleString();
+        }
+
+        // Check IP
+        async function fetchIp() {
+            document.getElementById('myIp').innerText = "Checking...";
+            try {
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                document.getElementById('myIp').innerText = d.ip;
+                document.getElementById('myIsp').innerText = d.org;
+                document.getElementById('myCity').innerText = `${d.city}, ${d.country_name}`;
+            } catch (e) { document.getElementById('myIp').innerText = "Gagal Load"; }
+        }
+    </script>
 </body>
-                  </html>
+                    </html>
