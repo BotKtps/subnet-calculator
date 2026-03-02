@@ -1,10 +1,11 @@
 {
   "functions": {
-    "index.php": { "runtime": "vercel-php@0.7.1" },
-    "listip.php": { "runtime": "vercel-php@0.7.1" }
+    "api/*.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
   },
   "rewrites": [
-    { "source": "/listip", "destination": "/listip.php" },
-    { "source": "/", "destination": "/index.php" }
+    { "source": "/", "destination": "/api/index.php" },
+    { "source": "/listip", "destination": "/api/listip.php" }
   ]
 }
