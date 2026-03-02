@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicko Dev Tools - Network Suite</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-terminal"></i></div>
+                <span>Dicko Dev Tools</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span class="version-tag">v1.2 Beta</span>
+        </div>
+    </header>
+
+    <!-- Overlay Sidebar -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <p class="sidebar-label">MAIN TOOLS</p>
+            <nav>
+                <a href="#" class="nav-link active" data-target="calc">
+                    <i class="fas fa-calculator"></i> Subnet Calculator
+                </a>
+                <a href="#" class="nav-link" data-target="iplist">
+                    <i class="fas fa-list-ol"></i> IP List & Cheat Sheet
+                </a>
+                <a href="#" class="nav-link" data-target="tjkt">
+                    <i class="fas fa-user-graduate"></i> Materi TJKT
+                </a>
+            </nav>
+            
+            <p class="sidebar-label" style="margin-top: 2rem;">RESOURCES</p>
+            <nav>
+                <a href="#" class="nav-link" data-target="about">
+                    <i class="fas fa-info-circle"></i> About Dev
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+        <!-- Section: Calculator -->
+        <section id="calc" class="tab-content active">
+            <div class="section-header">
+                <h2>Subnet Calculator</h2>
+                <p>Hitung pembagian jaringan IP Class A, B, dan C dengan mudah.</p>
+            </div>
+
+            <div class="card">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>IP Address</label>
+                        <input type="text" id="ipAddress" placeholder="192.168.1.1" value="192.168.1.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Prefix / CIDR</label>
+                        <select id="cidrSelect"></select>
+                    </div>
+                </div>
+                <button class="btn-primary" id="btnCalculate">
+                    <i class="fas fa-bolt"></i> Kalkulasi Sekarang
+                </button>
+            </div>
+
+            <div id="resultCard" class="card result-card" style="display: none;">
+                <h3>Hasil Analisis</h3>
+                <div class="result-grid" id="resultDetails">
+                    <!-- JS will inject results here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: IP List -->
+        <section id="iplist" class="tab-content">
+            <div class="section-header">
+                <h2>IP Address Cheat Sheet</h2>
+                <p>Daftar range IP Public dan Private sesuai standar RFC.</p>
+            </div>
+            <div class="card overflow-x">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>First Octet Range</th>
+                            <th>Default Mask</th>
+                            <th>Private Range</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge cls-a">Class A</span></td>
+                            <td>1 - 126</td>
+                            <td>255.0.0.0 (/8)</td>
+                            <td>10.0.0.0 - 10.255.255.255</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge cls-b">Class B</span></td>
+                            <td>128 - 191</td>
+                            <td>255.255.0.0 (/16)</td>
+                            <td>172.16.0.0 - 172.31.255.255</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge cls-c">Class C</span></td>
+                            <td>192 - 223</td>
+                            <td>255.255.255.0 (/24)</td>
+                            <td>192.168.0.0 - 192.168.255.255</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section: TJKT -->
+        <section id="tjkt" class="tab-content">
+            <div class="section-header">
+                <h2>Materi Pembelajaran TJKT</h2>
+            </div>
+            <div class="kb-grid">
+                <div class="kb-item">
+                    <i class="fas fa-project-diagram"></i>
+                    <h4>Topologi Jaringan</h4>
+                    <p>Mempelajari susunan fisik dan logis antar komputer: Star, Mesh, Bus, dan Hybrid.</p>
+                </div>
+                <div class="kb-item">
+                    <i class="fas fa-route"></i>
+                    <h4>MikroTik Routing</h4>
+                    <p>Dasar-dasar konfigurasi RouterOS, NAT, Firewall, dan Bandwidth Management.</p>
+                </div>
+                <div class="kb-item">
+                    <i class="fas fa-shield-halved"></i>
+                    <h4>Cyber Security</h4>
+                    <p>Keamanan dasar jaringan dari serangan sniffing, spoofing, dan Brute Force.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/calculator.js"></script>
+    <script src="js/main.js"></script>
+</body>
+                  </html>
