@@ -3,373 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dicko Dev Tools Pro - All-in-One Network Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Subnet Calculator - Dicko Dev Tools</title>
     <style>
+        /* CSS Variables untuk tema */
         :root {
-            --primary: #4f46e5;
-            --primary-light: #eef2ff;
-            --primary-dark: #3730a3;
-            --bg-body: #f8fafc;
-            --bg-sidebar: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --logo-text: #111827;
         }
 
-        * { margin:0; padding:0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg-body); color: var(--text-main); overflow-x: hidden; }
-
-        /* --- HEADER --- */
-        header.top-nav {
-            height: 70px; background: #fff; display: flex; align-items: center;
-            padding: 0 1.5rem; position: fixed; top: 0; width: 100%; z-index: 1000;
-            border-bottom: 1px solid var(--border);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .hamburger {
-            font-size: 1.5rem; cursor: pointer; color: var(--text-main);
-            width: 45px; height: 45px; display: flex; align-items: center;
-            justify-content: center; border-radius: 12px;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .brand { display: flex; align-items: center; gap: 12px; margin-left: 10px; }
-        .brand-logo { background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .brand-name { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
-
-        /* --- SIDEBAR & MENU --- */
-        .sidebar {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-            background: var(--bg-sidebar); border-right: 1px solid var(--border);
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; padding: 1.5rem;
-            overflow-y: auto;
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        .sidebar.active { left: 0; }
 
-        .sidebar-close { position: absolute; top: 20px; right: 20px; cursor: pointer; color: var(--text-muted); }
-
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-            display: none; z-index: 1500; backdrop-filter: blur(4px);
+        /* Logo Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
         }
-        .sidebar-overlay.active { display: block; }
 
-        /* Sub-Menu / Dropdown Styles */
-        .menu-category { margin-top: 1.5rem; }
-        .menu-parent {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px 18px; cursor: pointer; font-weight: 700;
-            color: var(--text-main); border-radius: 14px; transition: 0.2s;
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--logo-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
-        .menu-parent:hover { background: var(--primary-light); color: var(--primary); }
-        .menu-parent i.arrow { font-size: 0.8rem; transition: 0.3s; }
-        .menu-parent.open i.arrow { transform: rotate(180deg); }
 
-        .menu-children {
-            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
-            padding-left: 1rem;
+        .logo span {
+            color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
         }
-        .menu-children.open { max-height: 500px; }
 
-        .nav-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px 18px;
-            text-decoration: none; color: var(--text-muted); border-radius: 12px;
-            margin-top: 5px; transition: 0.2s; cursor: pointer; font-weight: 600; font-size: 0.95rem;
+        .tool-name {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+            font-weight: 500;
         }
-        .nav-item:hover, .nav-item.active { background: var(--primary-light); color: var(--primary); }
 
-        .menu-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin: 2rem 0 0.5rem 1rem; }
-
-        /* --- CONTENT CARDS --- */
-        main { margin-top: 85px; padding: 1.5rem; max-width: 900px; margin-inline: auto; }
-        .page { display: none; animation: slideUp 0.4s ease; }
-        .page.active { display: block; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card {
-            background: #fff; padding: 1.8rem; border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: var(--shadow);
+        /* Input Form Styles */
+        .input-group {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 10px;
             margin-bottom: 1.5rem;
         }
 
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
-        input, select { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; outline: none; transition: 0.2s; }
-        input:focus { border-color: var(--primary); }
-
-        .btn {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s;
+        .form-control {
+            display: flex;
+            flex-direction: column;
         }
-        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        .grid-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 15px; }
-        .res-box { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
-        .res-box small { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
-        .res-box p { font-family: monospace; font-weight: 700; color: var(--primary); margin-top: 4px; }
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+        }
 
-        /* IP Lookup Hero */
-        .ip-hero { background: var(--primary-light); padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 20px; }
-        .ip-hero h1 { color: var(--primary); font-size: 2.5rem; letter-spacing: -1px; }
+        input, select {
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Result Styles */
+        .results {
+            margin-top: 2rem;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .result-table th, .result-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-table th {
+            color: #6b7280;
+            font-weight: 600;
+            width: 40%;
+        }
+
+        .result-table td {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* Highlight Wildcard Row */
+        .wildcard-row th, .wildcard-row td {
+            background-color: #f0f9ff;
+            color: var(--primary-color);
+        }
+
+        .result-table tr:last-child td, 
+        .result-table tr:last-child th {
+            border-bottom: none;
+        }
+
+        .error-msg {
+            color: #dc2626;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <header class="top-nav">
-        <div class="hamburger" onclick="toggleSidebar(true)"><i class="fas fa-bars"></i></div>
-        <div class="brand">
-            <div class="brand-logo"><i class="fas fa-terminal"></i></div>
-            <span class="brand-name">Dicko Dev Tools</span>
-        </div>
-    </header>
-
-    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar(false)"></div>
-
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-close" onclick="toggleSidebar(false)"><i class="fas fa-times"></i></div>
-        
-        <div class="menu-category">
-            <!-- PARENT MENU: NETWORK -->
-            <div class="menu-parent" onclick="toggleSubMenu('networkSub')">
-                <span><i class="fas fa-network-wired" style="margin-right: 10px;"></i> Network</span>
-                <i class="fas fa-chevron-down arrow" id="networkSubArrow"></i>
-            </div>
-            <!-- CHILD MENU: NETWORK -->
-            <div class="menu-children" id="networkSub">
-                <div class="nav-item active" onclick="navigate('calc', this)"><i class="fas fa-calculator"></i> Subnet Calculator</div>
-                <div class="nav-item" onclick="navigate('lookup', this)"><i class="fas fa-search-location"></i> MyLookup Pro (IP)</div>
-                <div class="nav-item" onclick="navigate('mac-lookup', this)"><i class="fas fa-barcode"></i> MAC Lookup</div>
-                <div class="nav-item" onclick="navigate('dns-lookup', this)"><i class="fas fa-globe"></i> DNS Lookup</div>
-                <div class="nav-item" onclick="navigate('iplist', this)"><i class="fas fa-list-ol"></i> IP Reference</div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Dicko <span>Dev Tools</span></div>
+            <div class="tool-name">IP Subnet & Wildcard Calculator</div>
         </div>
 
-        <p class="menu-label">Other Tools</p>
-        <div class="nav-item" onclick="navigate('utils', this)"><i class="fas fa-toolbox"></i> TJKT Utils</div>
-        <div class="nav-item" onclick="navigate('materi', this)"><i class="fas fa-graduation-cap"></i> Materi Dasar TJKT</div>
-    </aside>
-
-    <main>
-        <!-- PAGE: SUBNET CALC -->
-        <section id="calc" class="page active">
-            <div class="card">
-                <h2>Subnet Calculator</h2>
-                <div class="form-group">
-                    <label>IP Address</label>
-                    <input type="text" id="ipInput" value="192.168.1.1">
+        <div class="calculator-form">
+            <div class="input-group">
+                <div class="form-control">
+                    <label for="ipAddress">IP Address</label>
+                    <input type="text" id="ipAddress" placeholder="Contoh: 192.168.1.1" value="192.168.1.1">
                 </div>
-                <div class="form-group">
-                    <label>CIDR</label>
-                    <select id="cidrInput"></select>
-                </div>
-                <button class="btn" onclick="calculateSubnet()">Analyze Network</button>
-                <div id="resCalc" class="grid-results" style="display:none;">
-                    <div class="res-box"><small>Network ID</small><p id="netId"></p></div>
-                    <div class="res-box"><small>Broadcast</small><p id="broadId"></p></div>
-                    <div class="res-box"><small>Subnet Mask</small><p id="maskId"></p></div>
-                    <div class="res-box"><small>Total Host</small><p id="hostId"></p></div>
-                    <div class="res-box"><small>Range Host</small><p id="rangeId" style="font-size:0.8rem;"></p></div>
+                <div class="form-control">
+                    <label for="cidr">CIDR</label>
+                    <select id="cidr">
+                        <!-- Javascript will populate this -->
+                    </select>
                 </div>
             </div>
-        </section>
+            <button onclick="calculateSubnet()">Hitung Subnet</button>
+            <div id="errorMessage" class="error-msg">Format IP Address tidak valid!</div>
+        </div>
 
-        <!-- PAGE: MYLOOKUP (IP) -->
-        <section id="lookup" class="page">
-            <div class="card">
-                <h2>MyLookup Pro</h2>
-                <div class="ip-hero">
-                    <small style="font-weight: 800; color: var(--primary);">PUBLIC IP ADDRESS</small>
-                    <h1 id="pubIp">...</h1>
-                </div>
-                <div class="grid-results">
-                    <div class="res-box"><small>ISP</small><p id="pubIsp">-</p></div>
-                    <div class="res-box"><small>ASN</small><p id="pubAsn">-</p></div>
-                    <div class="res-box"><small>Location</small><p id="pubLoc">-</p></div>
-                    <div class="res-box"><small>Timezone</small><p id="pubTime">-</p></div>
-                </div>
-                <button class="btn" style="margin-top: 15px;" onclick="fetchIpData()">Refresh Data</button>
-            </div>
-        </section>
-
-        <!-- PAGE: MAC LOOKUP (NEW) -->
-        <section id="mac-lookup" class="page">
-            <div class="card">
-                <h2>MAC Address Lookup</h2>
-                <div class="form-group">
-                    <label>MAC Address</label>
-                    <input type="text" id="macInput" placeholder="Contoh: 00:0a:95:9d:68:16">
-                </div>
-                <button class="btn" onclick="lookupMac()">Check Vendor</button>
-                <div id="resMac" class="res-box" style="display:none; margin-top: 15px;"></div>
-            </div>
-        </section>
-
-        <!-- PAGE: DNS LOOKUP (NEW) -->
-        <section id="dns-lookup" class="page">
-            <div class="card">
-                <h2>DNS Lookup</h2>
-                <div class="form-group">
-                    <label>Domain Name</label>
-                    <input type="text" id="dnsInput" placeholder="google.com">
-                </div>
-                <button class="btn" onclick="lookupDns()">Get A Records</button>
-                <div id="resDns" class="res-box" style="display:none; margin-top: 15px;"></div>
-            </div>
-        </section>
-
-        <!-- PAGE: IP LIST -->
-        <section id="iplist" class="page">
-            <div class="card">
-                <h2>IP Reference</h2>
-                <div class="res-box" style="margin-bottom: 10px;"><small>Class A</small><p>1 - 126 (/8)</p></div>
-                <div class="res-box" style="margin-bottom: 10px;"><small>Class B</small><p>128 - 191 (/16)</p></div>
-                <div class="res-box"><small>Class C</small><p>192 - 223 (/24)</p></div>
-            </div>
-        </section>
-
-        <!-- PAGE: UTILS -->
-        <section id="utils" class="page">
-            <div class="card">
-                <h3>Bandwidth Converter</h3>
-                <input type="number" id="bwInput" placeholder="Masukkan Mbps..." oninput="convertBw()" style="margin-top:10px;">
-                <div class="grid-results">
-                    <div class="res-box"><small>Kbps</small><p id="outKbps">0</p></div>
-                    <div class="res-box"><small>Gbps</small><p id="outGbps">0</p></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PAGE: MATERI -->
-        <section id="materi" class="page">
-            <div class="card">
-                <h2>Materi Dasar TJKT</h2>
-                <div class="res-box"><small>7 OSI Layer</small><p style="font-family: inherit; font-size: 0.85rem;">Physical, Data Link, Network, Transport, Session, Presentation, Application</p></div>
-            </div>
-        </section>
-    </main>
+        <div id="results" class="results">
+            <table class="result-table">
+                <tr>
+                    <th>IP Address</th>
+                    <td id="resIP"></td>
+                </tr>
+                <tr>
+                    <th>Subnet Mask</th>
+                    <td id="resMask"></td>
+                </tr>
+                <!-- Bagian Wildcard ditambahkan disini -->
+                <tr class="wildcard-row">
+                    <th>Wildcard Mask</th>
+                    <td id="resWildcard"></td>
+                </tr>
+                <tr>
+                    <th>Network Address</th>
+                    <td id="resNet"></td>
+                </tr>
+                <tr>
+                    <th>Broadcast Address</th>
+                    <td id="resBroad"></td>
+                </tr>
+                <tr>
+                    <th>First Usable IP</th>
+                    <td id="resFirst"></td>
+                </tr>
+                <tr>
+                    <th>Last Usable IP</th>
+                    <td id="resLast"></td>
+                </tr>
+                <tr>
+                    <th>Total Hosts</th>
+                    <td id="resTotal"></td>
+                </tr>
+                <tr>
+                    <th>Usable Hosts</th>
+                    <td id="resUsable"></td>
+                </tr>
+                <tr>
+                    <th>IP Class</th>
+                    <td id="resClass"></td>
+                </tr>
+                <tr>
+                    <th>IP Binary</th>
+                    <td id="resBin" style="font-size: 0.8em; color: #666;"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
     <script>
-        // --- PRESERVED LOGIC: SIDEBAR & NAVIGATION ---
-        function toggleSidebar(open) {
-            document.getElementById('sidebar').classList.toggle('active', open);
-            document.getElementById('overlay').classList.toggle('active', open);
+        // Populate CIDR Dropdown
+        const cidrSelect = document.getElementById('cidr');
+        for (let i = 32; i >= 1; i--) {
+            let option = document.createElement('option');
+            option.value = i;
+            option.text = `/${i}`;
+            if (i === 24) option.selected = true; 
+            cidrSelect.appendChild(option);
         }
 
-        function toggleSubMenu(id) {
-            const menu = document.getElementById(id);
-            const arrow = document.getElementById(id + 'Arrow');
-            menu.classList.toggle('open');
-            arrow.parentElement.classList.toggle('open');
+        // Helper functions
+        function ipToInt(ip) {
+            return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
         }
 
-        function navigate(pageId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            el.classList.add('active');
-            if(pageId === 'lookup') fetchIpData();
-            if(window.innerWidth < 1024) toggleSidebar(false);
+        function intToIp(int) {
+            return [
+                (int >>> 24) & 0xFF,
+                (int >>> 16) & 0xFF,
+                (int >>> 8) & 0xFF,
+                int & 0xFF
+            ].join('.');
         }
 
-        // --- PRESERVED LOGIC: SUBNET CALCULATOR ---
-        function getMask(cidr) {
-            let m = []; let t = cidr;
-            for(let i=0; i<4; i++) {
-                let b = t >= 8 ? 8 : (t > 0 ? t : 0);
-                m.push(t > 0 ? 256 - Math.pow(2, 8-b) : 0);
-                t -= b;
-            }
-            return m.join('.');
+        function isValidIP(ip) {
+            const pattern = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return pattern.test(ip);
         }
 
-        function populateCidr() {
-            const sel = document.getElementById('cidrInput');
-            for(let i=32; i>=1; i--) {
-                let opt = document.createElement('option');
-                opt.value = i; opt.text = `/${i} - (${getMask(i)})`;
-                if(i===24) opt.selected = true;
-                sel.add(opt);
-            }
+        function getIpClass(firstOctet) {
+            if (firstOctet >= 1 && firstOctet <= 126) return 'A';
+            if (firstOctet >= 128 && firstOctet <= 191) return 'B';
+            if (firstOctet >= 192 && firstOctet <= 223) return 'C';
+            if (firstOctet >= 224 && firstOctet <= 239) return 'D (Multicast)';
+            if (firstOctet >= 240 && firstOctet <= 254) return 'E (Experimental)';
+            return 'Unknown/Loopback';
         }
 
+        function intToBinaryString(int) {
+            let bin = (int >>> 0).toString(2);
+            while (bin.length < 32) bin = "0" + bin;
+            return bin.match(/.{1,8}/g).join('.');
+        }
+
+        // Main Calculation
         function calculateSubnet() {
-            const ip = document.getElementById('ipInput').value;
-            const cidr = parseInt(document.getElementById('cidrInput').value);
-            if(!/^(?:\d{1,3}\.){3}\d{1,3}$/.test(ip)) return alert("IP Tidak Valid");
-            const ipParts = ip.split('.').map(Number);
-            const maskStr = getMask(cidr);
-            const maskParts = maskStr.split('.').map(Number);
-            const net = ipParts.map((p, i) => p & maskParts[i]);
-            const broad = net.map((p, i) => p | (255 - maskParts[i]));
-            document.getElementById('netId').innerText = net.join('.');
-            document.getElementById('broadId').innerText = broad.join('.');
-            document.getElementById('maskId').innerText = maskStr;
-            document.getElementById('hostId').innerText = Math.pow(2, 32-cidr).toLocaleString();
-            let s = [...net]; s[3]++; let e = [...broad]; e[3]--;
-            document.getElementById('rangeId').innerText = `${s.join('.')} - ${e.join('.')}`;
-            document.getElementById('resCalc').style.display = 'grid';
+            const ipInput = document.getElementById('ipAddress').value.trim();
+            const cidrInput = parseInt(document.getElementById('cidr').value);
+            const errorDiv = document.getElementById('errorMessage');
+            const resultDiv = document.getElementById('results');
+
+            if (!isValidIP(ipInput)) {
+                errorDiv.style.display = 'block';
+                resultDiv.style.display = 'none';
+                return;
+            }
+            errorDiv.style.display = 'none';
+
+            const ipInt = ipToInt(ipInput);
+            
+            // Subnet Mask Calculation
+            const maskInt = ~((1 << (32 - cidrInput)) - 1) >>> 0;
+            
+            // Wildcard Calculation (Invers dari Subnet Mask)
+            const wildcardInt = ~maskInt >>> 0;
+
+            const networkInt = (ipInt & maskInt) >>> 0;
+            const broadcastInt = (networkInt | (~maskInt)) >>> 0;
+
+            let firstUsableInt, lastUsableInt, usableHosts;
+            const totalHosts = Math.pow(2, 32 - cidrInput);
+
+            if (cidrInput === 32) {
+                firstUsableInt = networkInt;
+                lastUsableInt = networkInt;
+                usableHosts = 1;
+            } else if (cidrInput === 31) {
+                firstUsableInt = networkInt;
+                lastUsableInt = broadcastInt;
+                usableHosts = 2;
+            } else {
+                firstUsableInt = (networkInt + 1) >>> 0;
+                lastUsableInt = (broadcastInt - 1) >>> 0;
+                usableHosts = totalHosts - 2;
+            }
+
+            // Update DOM
+            document.getElementById('resIP').innerText = ipInput + " /" + cidrInput;
+            document.getElementById('resMask').innerText = intToIp(maskInt);
+            
+            // Set Wildcard Result
+            document.getElementById('resWildcard').innerText = intToIp(wildcardInt);
+
+            document.getElementById('resNet').innerText = intToIp(networkInt);
+            document.getElementById('resBroad').innerText = intToIp(broadcastInt);
+            document.getElementById('resFirst').innerText = intToIp(firstUsableInt);
+            document.getElementById('resLast').innerText = intToIp(lastUsableInt);
+            document.getElementById('resTotal').innerText = totalHosts.toLocaleString();
+            document.getElementById('resUsable').innerText = usableHosts.toLocaleString();
+            
+            const firstOctet = parseInt(ipInput.split('.')[0]);
+            document.getElementById('resClass').innerText = getIpClass(firstOctet);
+            document.getElementById('resBin').innerText = intToBinaryString(ipInt);
+
+            resultDiv.style.display = 'block';
         }
 
-        // --- PRESERVED LOGIC: IP LOOKUP ---
-        async function fetchIpData() {
-            document.getElementById('pubIp').innerText = "Scanning...";
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const d = await res.json();
-                document.getElementById('pubIp').innerText = d.ip;
-                document.getElementById('pubIsp').innerText = d.org;
-                document.getElementById('pubAsn').innerText = d.asn;
-                document.getElementById('pubLoc').innerText = `${d.city}, ${d.country_name}`;
-                document.getElementById('pubTime').innerText = d.timezone;
-            } catch(e) { document.getElementById('pubIp').innerText = "Error"; }
-        }
-
-        // --- NEW LOGIC: MAC LOOKUP ---
-        async function lookupMac() {
-            const mac = document.getElementById('macInput').value;
-            const resDiv = document.getElementById('resMac');
-            resDiv.style.display = 'block'; resDiv.innerText = "Searching...";
-            try {
-                const res = await fetch(`https://api.macvendors.com/${mac}`);
-                if(res.ok) {
-                    const vendor = await res.text();
-                    resDiv.innerHTML = `<small>VENDOR:</small><p>${vendor}</p>`;
-                } else { resDiv.innerText = "Vendor Tidak Ditemukan"; }
-            } catch(e) { resDiv.innerText = "API Error"; }
-        }
-
-        // --- NEW LOGIC: DNS LOOKUP ---
-        async function lookupDns() {
-            const dom = document.getElementById('dnsInput').value;
-            const resDiv = document.getElementById('resDns');
-            resDiv.style.display = 'block'; resDiv.innerText = "Fetching...";
-            try {
-                const res = await fetch(`https://dns.google/resolve?name=${dom}`);
-                const data = await res.json();
-                if(data.Answer) {
-                    let h = '<small>A RECORDS:</small>';
-                    data.Answer.forEach(a => h += `<p>${a.data}</p>`);
-                    resDiv.innerHTML = h;
-                } else { resDiv.innerText = "Domain Tidak Ditemukan"; }
-            } catch(e) { resDiv.innerText = "API Error"; }
-        }
-
-        // --- PRESERVED LOGIC: UTILS ---
-        function convertBw() {
-            const v = parseFloat(document.getElementById('bwInput').value) || 0;
-            document.getElementById('outKbps').innerText = (v * 1024).toLocaleString();
-            document.getElementById('outGbps').innerText = (v / 1024).toFixed(4);
-        }
-
-        // RUN ON START
-        window.onload = function() {
-            populateCidr();
-            toggleSubMenu('networkSub'); // Buka menu network secara default
-        };
+        // Event Listener Enter
+        document.getElementById("ipAddress").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                calculateSubnet();
+            }
+        });
     </script>
 </body>
-                                             </html>
+</html>
